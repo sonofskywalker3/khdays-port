@@ -174,7 +174,6 @@ khdays::assets::MobiClipCoefficientTables load_mobiclip_coefficient_tables() {
     if (entry == nullptr) {
         throw std::runtime_error("MobiClip: overlay 24 is absent from the overlay table");
     }
-    const auto ram_address = read32(entry + 4U);
     const auto ram_size = static_cast<std::size_t>(read32(entry + 8U));
     const auto file_id = read32(entry + 24U);
     std::ostringstream name;
@@ -185,14 +184,16 @@ khdays::assets::MobiClipCoefficientTables load_mobiclip_coefficient_tables() {
         throw std::runtime_error("MobiClip: overlay 24 decompressed shorter than RAM size");
     }
 
-    constexpr std::uint32_t kTableAddresses[2] = {0x0208a7c4U, 0x020886c4U};
+    // The tables are data_ov024_0208a7c4 and data_ov024_020886c4 in the
+    // European build, whose overlay 24 loads at 0x02082960. The US build
+    // (YKGE) ships an overlay of the same size (0x110c0 bytes), loaded
+    // 0x20 lower at 0x02082940, so the tables are located by their offset
+    // into the overlay rather than by absolute address.
+    constexpr std::size_t kTableOffsets[2] = {
+        0x0208a7c4U - 0x02082960U, 0x020886c4U - 0x02082960U};
     khdays::assets::MobiClipCoefficientTables tables{};
     for (std::size_t variant = 0; variant < 2U; ++variant) {
-        if (kTableAddresses[variant] < ram_address) {
-            throw std::runtime_error("MobiClip: coefficient table precedes overlay RAM");
-        }
-        const auto offset = static_cast<std::size_t>(
-            kTableAddresses[variant] - ram_address);
+        const auto offset = kTableOffsets[variant];
         constexpr std::size_t kTableBytes = 0x2100U;
         if (offset + kTableBytes > overlay.size()) {
             throw std::runtime_error("MobiClip: coefficient table exceeds overlay 24");
