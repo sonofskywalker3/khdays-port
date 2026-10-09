@@ -6,6 +6,12 @@
 	  "game_code": "YKGP",
 	  "rom_version": 0,
 	  "sha256": "1ecf5e7a41a2ae48e7c5fd3f678e5a79e854d843f1a1fa3a952a41b14e51ec4f"
+	},
+	{
+	  "name": "358/2 DAYS (USA)",
+	  "game_code": "YKGE",
+	  "rom_version": 0,
+	  "sha256": "3cbbe3f15b49fc26f43edaf0050899b3cc1091a25e7a496373409c7c8c6fd0cb"
 	}
   ]
 }
