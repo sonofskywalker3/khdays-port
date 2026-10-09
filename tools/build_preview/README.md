@@ -8,7 +8,7 @@ The tool neither downloads nor distributes game content: it works on the data yo
 
 Starting from nothing but a clone, you need five things.
 
-**1. Your own copy of the game**, as a `.nds` dump. It must be the **Europe** release (game code `YKGP`, SHA-256 starting `1ecf5e7a41a2ae48`) — `verify_rom.py` recognises no other. `extract_data.py` will happily extract a US or JP dump, but it names its output directory after the ROM's hash and this tool looks in the European one by name, so any other dump ends at `ERROR: extracted data not found`. Nothing here downloads or ships game content: the assets stay on your machine, under the git-ignored `data/`.
+**1. Your own copy of the game**, as a `.nds` dump. It must be the **Europe** release (game code `YKGP`, SHA-256 starting `1ecf5e7a41a2ae48`). The runtime also supports the US release, but `extract_data.py` names its output directory after the ROM's hash and this tool looks in the European one by name, so a US dump ends at `ERROR: extracted data not found`. Nothing here downloads or ships game content: the assets stay on your machine, under the git-ignored `data/`.
 
 **2. Pillow**, which converts the CLI's BMP output to PNG:
 

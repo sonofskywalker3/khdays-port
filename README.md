@@ -156,6 +156,21 @@ Run on Linux or macOS with a single-config generator:
 ./build/khdays-port
 ```
 
+## Supported game releases
+
+`tools/verify_rom/supported_roms.json` lists the dumps the tools accept:
+
+| Release | Game code | Languages |
+|---|---|---|
+| Europe | `YKGP` | English, French, German, Italian, Spanish |
+| USA | `YKGE` | English, French |
+
+The decompilation targets the European build. The port reads the game's data
+files rather than its code, and every scene it has runs unchanged on US data.
+The one place the port reads code-side data (the MobiClip tables in
+overlay 24) locates it by its offset into the overlay, which is the same in
+both. The language menu offers only the languages the loaded release ships.
+
 ## Adding the decompilation as a submodule
 
 Run this from the repository root:
