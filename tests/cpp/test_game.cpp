@@ -1,4 +1,6 @@
 #include <cmath>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -12,6 +14,8 @@
 #include "khdays/game/scene.h"
 #include "khdays/game/scenes/day_transition_scene.h"
 #include "khdays/game/scenes/opening_scene.h"
+#include "khdays/game/settings.h"
+#include "khdays/vfs/filesystem.h"
 
 namespace {
 
@@ -288,6 +292,27 @@ int main() {
         finish.update(move_right, floor);
         expect(finish.state().completed,
                "entering the goal radius completes the slice");
+
+        // Languages follow the release's title-menu files: the US release
+        // ships ttl_fr.p2 only, the European one ttl_de/es/fr/it.p2.
+        {
+            namespace fs = std::filesystem;
+            const auto root = fs::temp_directory_path() / "khdays_language_test";
+            fs::remove_all(root);
+            fs::create_directories(root / "nitrofs" / "ttl");
+            std::ofstream{root / "nitrofs" / "ttl" / "ttl_fr.p2"} << 'x';
+            khdays::vfs::set_data_root(root);
+            expect(language_available(Language::English),
+                   "English is in every release");
+            expect(language_available(Language::French),
+                   "French is offered when ttl_fr.p2 exists");
+            expect(!language_available(Language::Spanish),
+                   "Spanish is not offered without ttl_es.p2");
+            expect(!language_available(Language::German),
+                   "German is not offered without ttl_de.p2");
+            khdays::vfs::set_data_root({});
+            fs::remove_all(root);
+        }
 
         std::cout << "Game-flow test passed\n";
         return 0;

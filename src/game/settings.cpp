@@ -1,6 +1,9 @@
 #include "khdays/game/settings.h"
 
 #include <array>
+#include <string>
+
+#include "khdays/vfs/filesystem.h"
 
 namespace khdays::game {
 
@@ -15,7 +18,8 @@ struct LanguageInfo {
     std::string_view name;  // written in that language
 };
 
-// The five languages the European release ships. (`db_ja.p2` also exists but is
+// The five languages the European release ships; the US release ships English
+// and French (see language_available). (`db_ja.p2` also exists in both but is
 // a leftover — no other Japanese asset does, so it is not offered.)
 constexpr std::array<LanguageInfo, 5> kLanguages{{
     {Language::German, "de", "Deutsch"},
@@ -74,6 +78,15 @@ std::string_view language_name(const Language value) {
         }
     }
     return "English";
+}
+
+bool language_available(const Language value) {
+    if (value == Language::English) {
+        return true;
+    }
+    const std::string title_menu =
+        "ttl/ttl_" + std::string{language_code(value)} + ".p2";
+    return khdays::vfs::exists(title_menu);
 }
 
 std::string localized_path(const std::string_view pattern) {

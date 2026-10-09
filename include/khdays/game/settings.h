@@ -55,6 +55,11 @@ Language language_from_code(std::string_view code);
 // The name to show in a menu, in that language itself.
 std::string_view language_name(Language value);
 
+// Whether the loaded game data ships this language. English is in every
+// release. Each other language needs its title-menu file, ttl/ttl_<code>.p2:
+// the European release has all four, the US release only French.
+bool language_available(Language value);
+
 // Resolve a localized game path. The game writes these paths with an `&` where
 // the language code goes — ov000 stores "UI/cm/cmo_&.p2" and "UI/mlt/res_&.p2"
 // literally — so this mirrors that convention rather than inventing one.

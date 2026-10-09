@@ -115,7 +115,7 @@ const std::array<BindRow, 12> kBindRows = {{
     {"Select", &KeyBindings::select},
 }};
 
-// The OS's preferred language, if the game ships it; English otherwise. SDL
+// The OS's preferred language, if this release ships it; English otherwise. SDL
 // hands back the user's locale list in priority order, so the first match wins.
 khdays::game::Language detect_os_language() {
     int count = 0;
@@ -130,7 +130,8 @@ khdays::game::Language detect_os_language() {
             // language_from_code falls back to English, so ask whether the code
             // really is one we ship instead of trusting the fallback.
             const auto candidate = khdays::game::language_from_code(code);
-            if (khdays::game::language_code(candidate) == code) {
+            if (khdays::game::language_code(candidate) == code
+                && khdays::game::language_available(candidate)) {
                 picked = candidate;
                 break;
             }
@@ -209,6 +210,11 @@ void OverlayUi::load_config() {
         } catch (...) {
             // ignore malformed lines
         }
+    }
+    // A saved language this release does not ship (e.g. Spanish saved while
+    // playing the European release, now running the US one) falls back.
+    if (!khdays::game::language_available(khdays::game::language())) {
+        khdays::game::set_language(khdays::game::Language::English);
     }
     language_at_start_ = khdays::game::language();
 }
@@ -324,6 +330,9 @@ void OverlayUi::render() {
                 for (const auto lang : {Language::German, Language::English,
                                         Language::Spanish, Language::French,
                                         Language::Italian}) {
+                    if (!khdays::game::language_available(lang)) {
+                        continue;  // not in this release (the US has en/fr)
+                    }
                     const bool on = khdays::game::language() == lang;
                     const auto name = khdays::game::language_name(lang);
                     if (ImGui::MenuItem(std::string{name}.c_str(), nullptr, on)) {
